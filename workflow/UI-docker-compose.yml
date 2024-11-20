@@ -1,0 +1,55 @@
+version: '3.5'
+
+services:
+  chatbot_ui:
+    image: edgestar/workflow
+    build:
+      dockerfile: Dockerfile
+    restart: always
+    environment:
+      - ENV_PATH=/workspace/envs/.env.${MODE}
+      - AGENTS_CONFIG_PATH=/workspace/${AGENTS_CONFIG_PATH}
+    volumes:
+      - ${PWD}:/workspace
+    ports:
+      - ${CHATBOT_UI_EXPOSE_PORT:-15401}:8501
+    command: ./run_ui.bash /workspace/ui_st/chatbot
+    networks:
+      - edgestar-network
+  rag_ui:
+    image: edgestar/workflow
+    build:
+      dockerfile: Dockerfile
+    restart: always
+    environment:
+      - ENV_PATH=/workspace/envs/.env.${MODE}
+      - AGENTS_CONFIG_PATH=/workspace/${AGENTS_CONFIG_PATH}
+      - DATA_MOUNT_PATH=/workspace/data
+    volumes:
+      - ${PWD}:/workspace
+      - ${PWD}/data:/workspace/data
+    ports:
+      - ${RAG_UI_EXPOSE_PORT:-15402}:8501
+    command: ./run_ui.bash /workspace/ui_st/rag
+    networks:
+      - edgestar-network
+  data_summarizer_ui:
+    image: edgestar/workflow
+    build:
+      dockerfile: Dockerfile
+    restart: always
+    environment:
+      - ENV_PATH=/workspace/envs/.env.${MODE}
+      - AGENTS_CONFIG_PATH=/workspace/${AGENTS_CONFIG_PATH}
+      - DATA_MOUNT_PATH=/workspace/data
+    volumes:
+      - ${PWD}/data:/workspace/data
+      - ${PWD}:/workspace
+    ports:
+      - ${DATA_SUMMARIZER_UI_EXPOSE_PORT:-15403}:8501
+    command: ./run_ui.bash /workspace/ui_st/data_summarizer
+    networks:
+      - edgestar-network
+networks:
+  edgestar-network:
+    external: true

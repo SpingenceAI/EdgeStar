@@ -1,0 +1,40 @@
+make
+requests
+loguru
+opencc-python-reimplemented
+colorama
+
+
+pypdf # for pdf reading
+rank_bm25 # for search
+unstructured # for pptx, docx, etc.
+python-pptx # for pptx reading
+python-docx # for docx reading
+docx2txt # for docx reading
+networkx # for xlsx
+pandas # for xlsx reading
+openpyxl # for xlsx reading
+langgraph
+langchain-ollama
+langchain-community
+chromadb
+langchain_chroma
+
+# ui
+streamlit
+validators
+# chainlit
+
+youtube_transcript_api # for youtube transcript
+pytubefix # for youtube transcript
+markdown # for markdown conversion
+
+# logger
+
+logtail-python
+
+envyaml
+
+# convert html to markdown
+markdownify
+

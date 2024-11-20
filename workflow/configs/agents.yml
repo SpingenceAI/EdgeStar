@@ -1,0 +1,97 @@
+ollama_base_url: &ollama_base_url ${OLLAMA_BASE_URL}
+ollama_model: &ollama_model ${OLLAMA_MODEL}
+
+ollama_llm_config: &ollama_llm_config
+  provider: ollama
+  model: *ollama_model
+  base_url: *ollama_base_url
+  model_type: chat
+
+openai_base_url: &openai_base_url ${OPENAI_BASE_URL}
+openai_model: &openai_model ${OPENAI_MODEL}
+openai_api_key: &openai_api_key ${OPENAI_API_KEY}
+
+openai_llm_config: &openai_llm_config
+  provider: openai
+  model: *openai_model
+  base_url: *openai_base_url
+  api_key: *openai_api_key
+  model_type: chat
+
+llm_config: &llm_config
+  provider: ollama
+  model: *ollama_model
+  base_url: *ollama_base_url
+  model_type: chat
+
+stt_base_url: &stt_base_url ${STT_BASE_URL}
+
+embedding_config: &embedding_config
+  provider: ollama
+  model: *ollama_model
+  base_url: *ollama_base_url
+  model_type: embedding
+
+# DATA MOUNT
+data_mount: &data_mount ${DATA_MOUNT}
+documents_path: &documents_path ${DATA_MOUNT}/documents
+sqlite_db_path: &sqlite_db_path ${DATA_MOUNT}/db.sqlite
+
+
+
+
+
+# CHATBOT
+chatbot:
+  *llm_config
+
+# DATA SUMMARIZER
+data_summarizer:
+  chat_llm: *llm_config
+  output_translation:
+    llm: *llm_config
+    language: zh-tw
+  stt_config:
+    base_url: *stt_base_url
+# MEETING RECAP
+meeting_recap:
+  chat_llm: *llm_config
+  stt_config:
+    base_url: *stt_base_url
+
+
+# MEMORY VECTOR STORE
+memory_vector_store_config: &memory_vector_store_config
+  provider: memory
+
+# FILE VECTOR STORE
+chroma_connection_string: &chroma_connection_string ${DATA_MOUNT}/vector_store
+vector_store_config: &vector_store_config
+  provider: chroma
+  connection_string: *chroma_connection_string
+# RAG
+rag:
+  retriever:
+    vector_store: *vector_store_config
+    embedding: *embedding_config
+    top_k: 2
+    use_bm25: true
+    bm25_weight: 0.4
+    save_folder_path: *documents_path
+    sqlite_db_path: *sqlite_db_path
+  chat_llm: *llm_config
+  output_translation:
+    llm: *llm_config
+    language: zh-tw
+rag_memory:
+  retriever:
+    vector_store: *memory_vector_store_config
+    embedding: *embedding_config
+    top_k: 2
+    use_bm25: true
+    save_folder_path: *documents_path
+    sqlite_db_path: *sqlite_db_path
+  chat_llm: *llm_config
+  output_translation:
+    llm: *llm_config
+    language: zh-tw
