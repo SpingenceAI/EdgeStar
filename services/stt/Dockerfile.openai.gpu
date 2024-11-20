@@ -1,0 +1,6 @@
+# openai whisper
+FROM nvcr.io/nvidia/pytorch:24.08-py3
+RUN apt update && apt install -y ffmpeg
+WORKDIR /workspace
+ADD requirements.txt /workspace/requirements.txt
+RUN pip install -U -r /workspace/requirements.txt

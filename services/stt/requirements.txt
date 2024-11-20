@@ -1,0 +1,6 @@
+faster-whisper
+openai-whisper
+setuptools-rust
+fastapi
+uvicorn
+python-multipart

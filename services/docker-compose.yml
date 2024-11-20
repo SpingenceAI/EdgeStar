@@ -1,0 +1,49 @@
+version: "3.8"
+
+services:
+  ollama:
+    image: ollama/ollama
+    restart: always
+    volumes:
+      - ${DATA_MOUNT_POINT:-.}/ollama_data:/root/.ollama
+    ports:
+      - ${OLLAMA_EXPOSE_PORT:-15703}:11434
+    environment:
+      - OLLAMA_NUM_PARALLEL=4
+      - OLLAMA_MAX_LOADED_MODELS=4
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [ gpu ]
+    networks:
+      - edgestar-network
+  stt:
+    image: edgestar/stt
+    restart: always
+    environment:
+      - MODEL_NAME=${STT_MODEL_NAME:-turbo}
+    build:
+      context: stt
+      dockerfile: Dockerfile.gpu
+    volumes:
+      - ${SERVICES_DIR}/stt:/workspace
+      - ${DATA_MOUNT_POINT:-.}/stt/models:/workspace/models
+      - ${DATA_MOUNT_POINT:-.}/logs/stt:/logs
+    ports:
+      - ${STT_EXPOSE_PORT:-15706}:8000
+    command: uvicorn app:app --host 0.0.0.0 --port 8000 --reload --log-config /workspace/log.ini
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [ gpu ]
+    networks:
+      - edgestar-network
+networks:
+  edgestar-network:
+    external: true
