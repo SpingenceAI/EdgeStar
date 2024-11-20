@@ -6,10 +6,10 @@ Agents are built upon langgraph, langchain.
 ## Overview
 
 The workflow component allows you to create custom AI pipelines by combining different services like:
-- chatbot
-- rag
-- data summarizer
-- meeting recap
+- chatbot : basic llm chatbot
+- rag: retrieval augmented generation
+- data summarizer: summarize data, data source can be files(pdf, docx, etc.) or urls or youtube videos
+- meeting recap: summarize meeting content
 
 ## Interfaces
 - Web UI (ui_st)
@@ -27,7 +27,7 @@ The workflow component allows you to create custom AI pipelines by combining dif
 - API (working in progress)
 
 
-## Getting Started (ENV SETUP)
+## Environment Setup
 
 1. run services (ollama, stt), follow instructions in [service readme](../services/readme.md)
 2. configure envs/.env.example
@@ -58,13 +58,19 @@ rag_memory:
     output_translation:
         language: zh-tw
 ```
-#### Playground CLI
+
+## RUN Workflow
+
+### Playground CLI
 run playground cli, mode: example, will mount current directory to /workspace and use envs/.env.example
 ```bash
 docker run --rm -it -v ${PWD}:/workspace --network edgestar-network --name workflow-playground edgestar/workflow python playground_cli.py --env envs/.env.example
 ```
 
 ### WEB UI
+CHATBOT: http://localhost:15401
+RAG: http://localhost:15402
+DATA SUMMARIZER: http://localhost:15403
 ```bash
 docker compose -f UI-docker-compose.yml --env-file envs/.env.example up
 ```
