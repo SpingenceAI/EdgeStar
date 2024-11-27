@@ -199,10 +199,8 @@ class Agent:
         template = f"""You a question re-writer that converts an input question to a better version that is optimized \n 
         for vectorstore retrieval. Look at the initial and formulate an improved question. \n
         Here is the initial question: \n\n {user_query}. Improved question with no preamble: \n """
-        messages = [
-
-        ]
-        response = self.chat_llm.invoke({"generation": template})
+        prompt = template.format(user_query=user_query)
+        response = self.chat_llm.invoke(prompt)
         new_query = response.content
         logger.warning(f"refrase user query to {new_query}")
         state["user_query"] = new_query
@@ -331,7 +329,6 @@ def init_graph(
             "NO": "node_transform_query",
         },
     )
-
     builder.add_conditional_edges(
         "node_generate_answer",
         agent.edge_grade_generation_v_documents_and_question,
@@ -341,6 +338,8 @@ def init_graph(
             "Hallucination": "node_generate_answer",
         },
     )
+    builder.add_edge("node_transform_query", "node_retrieve")
+
     builder.add_edge("node_append_answer", END)
     graph = builder.compile(checkpointer=MemorySaver())
 
