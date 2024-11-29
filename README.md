@@ -1,8 +1,6 @@
-
 ![image](./images/EdgeStar_logo.png)
 
 # EdgeStar
-
 
 EdgeStar is a modular AI platform consisting of two main components:
 
@@ -14,12 +12,13 @@ EdgeStar is a modular AI platform consisting of two main components:
 The services component provides containerized microservices for various AI capabilities:
 
 - **Ollama** - GPU-enabled LLM service for running open source language models
+
   - Exposed on port 15703 (configurable)
   - Supports parallel inference and multiple loaded models
   - Data stored in `./data/ollama_data`
 
 - **STT (Speech-to-Text)** - GPU-enabled speech recognition service
-  - Exposed on port 15706 (configurable) 
+  - Exposed on port 15706 (configurable)
   - FastAPI backend with auto-reload
   - Models stored in `./data/stt/models`
 
@@ -33,20 +32,18 @@ The workflow component allows you to create custom AI pipelines by combining dif
 
 - **Web UI (ui_st)**
   - Chatbot interface
-  - RAG (Retrieval Augmented Generation) 
+  - RAG (Retrieval Augmented Generation)
   - Data summarizer
+  - Web search
 - **CLI** via playground_cli.py
-- **Mail Service**
+- **Mail Service (in progress)**
   - Microsoft Graph API integration
-  - Gmail integration (in progress)
-- **API** (in development)
+  - Gmail integration
+- **API** (in progress)
 
 See the [Workflow README](workflow/readme.md) for detailed configuration and usage instructions.
 
+## Roadmaps
 
-## ROADMAPS
-
-- [ ] HTTP API
-- [ ] Mail Service
-- [ ] Translation Agent
-- [ ] Agent Refactoring
+- [ ] HTTP API v0.4.0
+- [ ] Mail Service (Gmail & Microsoft Graph) v0.3.0
