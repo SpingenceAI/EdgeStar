@@ -5,6 +5,8 @@ import os
 import tempfile
 import validators
 from src.agents.data_summarizer import utils_yt
+from src.agents.data_summarizer import utils_sharepoint
+from src.agents.data_summarizer import utils_google_drive
 from src.retriever.parser import PARSERS
 from typing import Optional
 from src.agents.data_summarizer import utils_stt
@@ -62,8 +64,14 @@ def extract_data(data_source: str, **kwargs) -> DataContent:
                 return DataContent(
                     title=title, content=content, data_type=DataType.MEDIA
                 )
-            # download the data
-            data_path = utils_download.download_data(data_source, temp_dir)
+            elif is_valid_domain(data_source, "sharepoint.com") or is_valid_domain(data_source, "onedrive.com"):
+                # TODO: add support for folder download
+                data_path = utils_sharepoint.download_sharepoint_data(data_source, temp_dir)
+            elif is_valid_domain(data_source, "drive.google.com") or is_valid_domain(data_source, "docs.google.com"):
+                data_path = utils_google_drive.download_google_drive_data(data_source, temp_dir)
+            else:
+                # download the data
+                data_path = utils_download.download_data(data_source, temp_dir)
         else:
             data_path = data_source
 

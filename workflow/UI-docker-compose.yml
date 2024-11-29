@@ -50,6 +50,20 @@ services:
     command: ./run_ui.bash /workspace/ui_st/data_summarizer
     networks:
       - edgestar-network
+  web_search_ui:
+    image: edgestar/workflow
+    build:
+      dockerfile: Dockerfile
+    environment:
+      - ENV_PATH=/workspace/envs/.env.${MODE}
+      - AGENTS_CONFIG_PATH=/workspace/${AGENTS_CONFIG_PATH}
+    volumes:
+      - ${PWD}:/workspace
+    command: ./run_ui.bash /workspace/ui_st/web_search
+    ports:
+      - ${WEB_SEARCH_UI_EXPOSE_PORT:-15404}:8501
+    networks:
+      - edgestar-network
 networks:
   edgestar-network:
     external: true
