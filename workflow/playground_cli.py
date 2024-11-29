@@ -37,8 +37,16 @@ class Logger:
         print(colorama.Fore.RED + text + colorama.Fore.RESET)
 
 
-def run_chatbot(agent_config, logger: Logger):
+def read_config(config_path):
+    """read config file"""
+    if not os.path.exists(config_path):
+        raise FileNotFoundError(f"Config file not found: {config_path}")
+    return EnvYAML(config_path, strict=False)
+
+
+def chatbot(agent_config, logger: Logger):
     from src.agents.chatbot.agent import init_graph
+
     logger.debug(f"agent_config: {agent_config}")
     graph, agent = init_graph(agent_config)
     thread_config = {"configurable": {"thread_id": str(time.time())}}
@@ -59,6 +67,7 @@ def run_chatbot(agent_config, logger: Logger):
 
 def data_summarizer(agent_config, logger: Logger):
     from src.agents.data_summarizer.agent import init_graph
+
     logger.system(f"Agent Config: {agent_config}")
     graph, agent = init_graph(
         agent_config, save_graph_path="./data/playground/graph.png"
@@ -100,8 +109,10 @@ def data_summarizer(agent_config, logger: Logger):
         else:
             logger.error("Invalid action")
 
+
 def meeting_recap(agent_config, logger: Logger):
     from src.agents.meeting_recap.agent import init_graph
+
     logger.system(f"Agent Config: {agent_config}")
     graph, agent = init_graph(agent_config)
     thread_config = {"configurable": {"thread_id": str(time.time())}}
@@ -120,10 +131,10 @@ def meeting_recap(agent_config, logger: Logger):
         state = graph.invoke(state, thread_config)
         logger.ai(state["summary"])
 
+
 def rag(agent_config, logger: Logger):
     from src.agents.rag.agent import init_graph
     from src.retriever.retriever import list_knowledge_bases
-
 
     # memory vector store
     if agent_config["retriever"]["vector_store"]["provider"] == "memory":
@@ -133,7 +144,9 @@ def rag(agent_config, logger: Logger):
         logger.system("Use file vector store")
         # choose knowledge base
         document_folder = agent_config["retriever"]["save_folder_path"]
-        knowledge_base_name = input(f"Choose knowledge base: {list_knowledge_bases(document_folder)}")
+        knowledge_base_name = input(
+            f"Choose knowledge base: {list_knowledge_bases(document_folder)}"
+        )
         if knowledge_base_name == "":
             knowledge_base_name = str(time.time())
         agent_config["retriever"]["vector_store"]["name"] = knowledge_base_name
@@ -169,7 +182,6 @@ def rag(agent_config, logger: Logger):
     # file vector store
     logger.system(f"RAG Documents:{[x.name for x in agent.retriever.list_documents()]}")
 
-
     while True:
         input_text = input("Enter your message: ")
         if input_text.lower() == "exit":
@@ -183,18 +195,29 @@ def rag(agent_config, logger: Logger):
         )
         logger.ai(state["messages"][-1].content)
 
-def read_config(config_path):
-    """read config file"""
-    if not os.path.exists(config_path):
-        raise FileNotFoundError(f"Config file not found: {config_path}")
-    return EnvYAML(config_path, strict=False)
+
+def web_search(agent_config, logger: Logger):
+    from src.agents.web_search.agent import init_graph
+
+    logger.system(f"Agent Config: {agent_config}")
+    graph, agent = init_graph(agent_config)
+    state = {"user_query": ""}
+    thread_config = {"configurable": {"thread_id": str(time.time())}}
+
+    while True:
+        input_text = input("Enter your message: ")
+        if input_text.lower() == "exit":
+            logger.system("Exiting WEB SEARCH")
+            break
+        state["user_query"] = input_text
+        state = graph.invoke(state, thread_config)
+        logger.ai(state["answer"])
 
 
-def main(agent, config, log_level):
+def main(agent, config, logger: Logger):
     """main function"""
-    logger = Logger(log_level)
     if agent == "chatbot":
-        run_chatbot(config, logger)
+        chatbot(config, logger)
     elif agent == "data_summarizer":
         data_summarizer(config, logger)
     elif agent == "meeting_recap":
@@ -232,27 +255,31 @@ if __name__ == "__main__":
         default="configs/agents.yml",
         help="Path to the configuration file",
     )
-    agent_list = ["chatbot", "meeting_recap", "rag", "data_summarizer"]
-    
+    agent_list = ["chatbot", "meeting_recap", "rag", "data_summarizer", "web_search"]
+
     args = parser.parse_args()
+    logger = Logger(args.log_level)
+
+    # load env file
     env_path = args.env
     if not os.path.exists(env_path):
         raise FileNotFoundError(f"Env file not found: {env_path}")
-    print(f"Loading env file: {env_path}")
+    logger.system(f"Loading env file: {env_path}")
     dotenv.load_dotenv(env_path)
-
+    # load config file
     config = read_config(args.config)
-
+    # select agent
     if args.agent not in agent_list:
         input_prompt = "Please select agent"
         for i, agent in enumerate(agent_list):
-            print(f"{i+1}. {agent}")
+            logger.user(f"{i+1}. {agent}")
         input_prompt += "\n"
         agent_selection = input(input_prompt)
         agent_selection = int(agent_selection) - 1
         if agent_selection >= 0 and agent_selection < len(agent_list):
             args.agent = agent_list[agent_selection]
         else:
-            print("Invalid agent id")
+            logger.error("Invalid agent id")
             exit(1)
-    main(args.agent, config[args.agent], args.log_level)
+    # run agent
+    main(args.agent, config[args.agent], logger)

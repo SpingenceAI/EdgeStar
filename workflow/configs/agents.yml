@@ -32,6 +32,12 @@ embedding_config: &embedding_config
   base_url: *ollama_base_url
   model_type: embedding
 
+search_engine_url: &search_engine_url ${SEARXNG_BASE_URL}
+search_engine_config: &search_engine_config
+  provider: searxng
+  base_url: *search_engine_url
+
+
 # DATA MOUNT
 data_mount: &data_mount ${DATA_MOUNT}
 documents_path: &documents_path ${DATA_MOUNT}/documents
@@ -95,3 +101,13 @@ rag_memory:
   output_translation:
     llm: *llm_config
     language: zh-tw
+
+
+
+# WEB SEARCH
+web_search:
+  chat_llm: *llm_config
+  search_engine: *search_engine_config
+  search_result_limit: 3
+  is_scrap_url: false
+  is_concise_step_results: false

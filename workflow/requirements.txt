@@ -38,3 +38,15 @@ envyaml
 # convert html to markdown
 markdownify
 
+
+#gmail related
+google-api-python-client 
+google-auth-httplib2 
+google-auth-oauthlib
+
+
+# scrapper
+selenium
+
+# download onedrive data
+onedrivedownloader

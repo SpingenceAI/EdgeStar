@@ -17,6 +17,11 @@ This directory contains various microservices that can be run using Docker Compo
 - Models stored in `./data/stt/models`
 - Logs stored in `./data/logs/stt`
 
+### SearxNG
+- Web search service
+- Exposed on port 15707 (configurable via SEARXNG_EXPOSE_PORT)
+- Uses SearxNG Docker image
+- SearxNG configuration in `./searxng`
 
 ## Configuration
 

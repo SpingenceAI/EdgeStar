@@ -44,6 +44,15 @@ services:
               capabilities: [ gpu ]
     networks:
       - edgestar-network
+  searxng:
+    image: docker.io/searxng/searxng:latest
+    restart: unless-stopped
+    ports:
+      - ${SEARXNG_EXPOSE_PORT:-15707}:8080
+    volumes:
+      - ./searxng:/etc/searxng:rw
+    networks:
+      - edgestar-network
 networks:
   edgestar-network:
     external: true
