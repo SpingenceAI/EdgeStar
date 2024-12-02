@@ -25,9 +25,9 @@ The workflow component allows you to create custom AI pipelines by combining dif
   - data summarizer
   - meeting recap
   - web search
-- Mail service (working in progress)
-  - microsoft graph api
-  - gmail
+- Mail service
+  - Microsoft Graph API
+  - Gmail API
 - API (working in progress)
 
 ## Environment Setup
@@ -88,4 +88,12 @@ docker run --rm -it -v ${PWD}:/workspace --network edgestar-network --name workf
 
 ```bash
 docker compose -f UI-docker-compose.yml --env-file envs/.env.example up
+```
+
+### Mail Service
+
+Follow instructions in [mail readme](./mail/readme.md)
+
+```bash
+docker compose -f mail-docker-compose.yml --env-file envs/.env.example up
 ```

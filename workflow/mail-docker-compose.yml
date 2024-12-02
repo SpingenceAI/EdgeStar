@@ -1,0 +1,24 @@
+# version: "3.8"
+services:
+  mail:
+    image: edgestar/workflow
+    build:
+      dockerfile: Dockerfile
+    # restart: always
+    environment:
+      - ENV_PATH=/workspace/envs/.env.${MODE}
+      - MAIL_ENV_PATH=/workspace/envs/.env.mail.${MODE}
+      - AGENTS_CONFIG_PATH=/workspace/${AGENTS_CONFIG_PATH}
+      - DATA_MOUNT_PATH=/workspace/data/mail
+    volumes:
+      - ${PWD}:/workspace
+      - ${PWD}/configs:/workspace/configs
+      - ${PWD}/data_mail:/workspace/data/mail
+    command: ./run_mail.bash
+
+    networks:
+      - edgestar-network
+
+networks:
+  edgestar-network:
+    external: true
