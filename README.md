@@ -18,9 +18,16 @@ The services component provides containerized microservices for various AI capab
   - Data stored in `./data/ollama_data`
 
 - **STT (Speech-to-Text)** - GPU-enabled speech recognition service
+
   - Exposed on port 15706 (configurable)
   - FastAPI backend with auto-reload
   - Models stored in `./data/stt/models`
+
+- **SearxNG** - Web search service  
+
+  - Exposed on port 15707 (configurable via SEARXNG_EXPOSE_PORT)
+  - Uses SearxNG Docker image
+  - SearxNG configuration in `services/searxng`
 
 See the [Services README](services/readme.md) for detailed configuration and usage instructions.
 
@@ -36,7 +43,7 @@ The workflow component allows you to create custom AI pipelines by combining dif
   - Data summarizer
   - Web search
 - **CLI** via playground_cli.py
-- **Mail Service (in progress)**
+- **Mail Service**
   - Microsoft Graph API integration
   - Gmail integration
 - **API** (in progress)
@@ -46,4 +53,3 @@ See the [Workflow README](workflow/readme.md) for detailed configuration and usa
 ## Roadmaps
 
 - [ ] HTTP API v0.4.0
-- [ ] Mail Service (Gmail & Microsoft Graph) v0.3.0
