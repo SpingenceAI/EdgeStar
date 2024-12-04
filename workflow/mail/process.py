@@ -121,6 +121,11 @@ def process_tool_web_search_mail(mail: mail_utils.Mail):
         reply = format_error_message(e)
     else:
         reply = state["answer"]
+    try:
+        reply = markdown.markdown(reply)
+    except Exception as e:
+        logger.error(f"process_web_search_mail failed to convert markdown: {reply}")
+        reply = reply
     mail_utils.reply_mail(mail, reply)
 
 
