@@ -54,6 +54,12 @@ def extract_data(data_source: str, **kwargs) -> DataContent:
     RETURNS:
         the data content
     """
+    audio_extensions = ["mp3", "mp4", "wav", "m4a", "aac"]
+    image_extensions = ["jpg", "jpeg", "png"]
+    text_extensions = ["txt", "json", "xml", "html", "csv"]
+    office_extensions = ["docx", "doc", "pdf", "ppt", "pptx"]
+    supported_file_extensions = audio_extensions + image_extensions + text_extensions + office_extensions
+
     stt_config = kwargs.get("stt_config", None)
 
     with tempfile.TemporaryDirectory() as temp_dir:
@@ -66,7 +72,11 @@ def extract_data(data_source: str, **kwargs) -> DataContent:
                 )
             elif is_valid_domain(data_source, "sharepoint.com") or is_valid_domain(data_source, "onedrive.com"):
                 # TODO: add support for folder download
-                data_path = utils_sharepoint.download_sharepoint_data(data_source, temp_dir)
+                file_path_list = utils_sharepoint.download_sharepoint_data(data_source, temp_dir)
+                file_path_list = [x for x in file_path_list if os.path.basename(x).split(".")[-1] in supported_file_extensions]
+                if len(file_path_list) == 0:
+                    raise ValueError(f"No file found in {data_source}")
+                data_path = file_path_list[0]
             elif is_valid_domain(data_source, "drive.google.com") or is_valid_domain(data_source, "docs.google.com"):
                 data_path = utils_google_drive.download_google_drive_data(data_source, temp_dir)
             else:
@@ -74,13 +84,13 @@ def extract_data(data_source: str, **kwargs) -> DataContent:
                 data_path = utils_download.download_data(data_source, temp_dir)
         else:
             data_path = data_source
-
+        print(f"data_path: {data_path}")
         file_extension = os.path.basename(data_path).split(".")[-1].lower()
-        if file_extension in ["mp3", "mp4", "wav", "m4a"]:
+        if file_extension in audio_extensions:
             content = utils_stt.transcribe_audio(data_path, stt_config)
             title = os.path.basename(data_path)
             data_type = DataType.MEDIA
-        elif file_extension in ["jpg", "jpeg", "png"]:
+        elif file_extension in image_extensions:
             data_type = DataType.IMAGE
             # TODO: add image parser ocr or vlm
             raise ValueError(f"Image extension {file_extension} is not supported")

@@ -32,29 +32,35 @@ The workflow component allows you to create custom AI pipelines by combining dif
 
 ## Environment Setup
 
-1. run services (ollama, stt), follow instructions in [service readme](../services/readme.md)
-2. configure envs/.env.example
+1. run services (ollama, stt, SearxNG), follow instructions in [service readme](../services/readme.md)
+2. create network (if not already created)
+
+```bash
+docker network create edgestar-network
+```
+
+3. configure envs/.env.example
    - OLLAMA_MODEL: the model name to use for ollama (ex: llama3.2:latest)
    - TAVILY_API_KEY: the api key for tavily (ex: tvly-xxxxxxxxxxxxxxxxxxxxxxxx) (optional)
-3. pull ollama model [refernece](https://github.com/ollama/ollama/blob/main/docs/api.md#pull-a-model)
+4. pull ollama model [refernece](https://github.com/ollama/ollama/blob/main/docs/api.md#pull-a-model)
 
 ```bash
 curl http://localhost:15703/api/pull -d '{"model": "llama3.2:latest"}'
 ```
 
-4. check if ollama model is pulled
+5. check if ollama model is pulled
 
 ```bash
 curl http://localhost:15703/api/tags
 ```
 
-5. build docker image for workflow
+6. build docker image for workflow
 
 ```bash
 docker build -t edgestar/workflow .
 ```
 
-6. Configure configs/agents.yml output translation language
+7. Configure configs/agents.yml output translation language
    some agents have output translation, you can configure the language here
 
 ```yaml

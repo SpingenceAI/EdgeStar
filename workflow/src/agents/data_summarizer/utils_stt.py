@@ -29,4 +29,5 @@ def transcribe_audio(file_path: str, stt_config: STTConfig) -> str:
         raise ValueError(f"provider {stt_config.provider} is not supported")
     files = {"file": open(file_path, "rb")}
     response = requests.post(url, files=files)
+    response.raise_for_status()
     return convert_language(response.json()["transcript"], "s2twp")
